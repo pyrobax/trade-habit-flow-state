@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -15,6 +15,7 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalKey, setModalKey] = useState(0); // Force modal to re-render
 
   const currentTrades = gameState.trades[gameState.activeProfile];
   
@@ -44,8 +45,14 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
+      setModalKey(prev => prev + 1); // Force modal to re-render
       setIsModalOpen(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDate(undefined);
   };
 
   const modifiers = {
@@ -116,7 +123,7 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
               
               return (
                 <div className={`
-                  relative w-full h-full flex flex-col items-center justify-center min-h-[36px] rounded
+                  relative w-full h-full flex flex-col items-center justify-center min-h-[36px] rounded px-1
                   ${hasGoodTrades ? 'bg-green-500 text-white' : ''}
                   ${hasBadTrades ? 'bg-red-500 text-white' : ''}
                 `}>
@@ -151,8 +158,9 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
 
       {selectedDate && (
         <TradeModal
+          key={modalKey}
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           selectedDate={selectedDate}
           gameState={gameState}
           updateGameState={updateGameState}

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { GameState, Trade } from '@/types/gameState';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,69 +20,86 @@ interface TradeModalProps {
 export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGameState }: TradeModalProps) => {
   const [formData, setFormData] = useState({
     symbol: '',
-    entryPrice: '',
-    exitPrice: '',
     position: 'long' as 'long' | 'short',
-    riskAmount: '',
+    pnlR: '',
     riskRewardRatio: '',
     notes: ''
   });
   const [selectedRules, setSelectedRules] = useState<string[]>([]);
+  const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
 
   const dateStr = selectedDate.toISOString().split('T')[0];
   const currentTrades = gameState.trades[gameState.activeProfile].filter(trade => trade.date === dateStr);
-  const profileRules = gameState.profiles[gameState.activeProfile].rules;
+  const profileRules = gameState.profiles[gameState.activeProfile].rules.filter(rule => rule.isActive);
 
   const resetForm = () => {
     setFormData({
       symbol: '',
-      entryPrice: '',
-      exitPrice: '',
       position: 'long',
-      riskAmount: '',
+      pnlR: '',
       riskRewardRatio: '',
       notes: ''
     });
     setSelectedRules([]);
+    setEditingTrade(null);
+  };
+
+  const startEdit = (trade: Trade) => {
+    setFormData({
+      symbol: trade.symbol,
+      position: trade.position,
+      pnlR: trade.pnlR.toString(),
+      riskRewardRatio: trade.riskRewardRatio.toString(),
+      notes: trade.notes || ''
+    });
+    setSelectedRules(trade.rulesFollowed);
+    setEditingTrade(trade);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const entryPrice = parseFloat(formData.entryPrice);
-    const exitPrice = parseFloat(formData.exitPrice);
-    const riskAmount = parseFloat(formData.riskAmount);
+    const pnlR = parseFloat(formData.pnlR);
     const riskRewardRatio = parseFloat(formData.riskRewardRatio);
-    
-    let pnlR = 0;
-    if (formData.position === 'long') {
-      pnlR = ((exitPrice - entryPrice) / entryPrice) * 100 / riskAmount;
-    } else {
-      pnlR = ((entryPrice - exitPrice) / entryPrice) * 100 / riskAmount;
-    }
 
-    const newTrade: Trade = {
-      id: uuidv4(),
+    const tradeData = {
+      id: editingTrade?.id || uuidv4(),
       date: dateStr,
       symbol: formData.symbol,
-      entryPrice,
-      exitPrice,
+      entryPrice: 0, // Not used but required by type
+      exitPrice: 0, // Not used but required by type
       position: formData.position,
-      riskAmount,
+      riskAmount: 1, // Not used but required by type
       pnlR,
       riskRewardRatio,
       rulesFollowed: selectedRules,
-      allRulesFollowed: selectedRules.length === profileRules.filter(r => r.isActive).length,
+      allRulesFollowed: selectedRules.length === profileRules.length,
       notes: formData.notes
     };
 
-    updateGameState(state => ({
-      ...state,
-      trades: {
-        ...state.trades,
-        [state.activeProfile]: [...state.trades[state.activeProfile], newTrade]
+    updateGameState(state => {
+      if (editingTrade) {
+        // Update existing trade
+        return {
+          ...state,
+          trades: {
+            ...state.trades,
+            [state.activeProfile]: state.trades[state.activeProfile].map(t => 
+              t.id === editingTrade.id ? tradeData : t
+            )
+          }
+        };
+      } else {
+        // Add new trade
+        return {
+          ...state,
+          trades: {
+            ...state.trades,
+            [state.activeProfile]: [...state.trades[state.activeProfile], tradeData]
+          }
+        };
       }
-    }));
+    });
 
     resetForm();
   };
@@ -98,6 +115,44 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
   };
 
   const handleRuleToggle = (ruleId: string) => {
+    // Play check sound
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+      
+      setTimeout(() => {
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode2 = audioContext.createGain();
+        
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(audioContext.destination);
+        
+        oscillator2.frequency.setValueAtTime(1100, audioContext.currentTime);
+        oscillator2.type = 'sine';
+        
+        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator2.start(audioContext.currentTime);
+        oscillator2.stop(audioContext.currentTime + 0.1);
+      }, 50);
+    } catch (error) {
+      console.warn('Audio playback failed:', error);
+    }
+
     setSelectedRules(prev => 
       prev.includes(ruleId) 
         ? prev.filter(id => id !== ruleId)
@@ -129,37 +184,51 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-medium">{trade.symbol} - {trade.position.toUpperCase()}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Entry: ${trade.entryPrice} | Exit: ${trade.exitPrice}
-                      </p>
                       <p className={`text-sm font-bold ${trade.pnlR >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         P&L: {trade.pnlR >= 0 ? '+' : ''}{trade.pnlR.toFixed(2)}R
                       </p>
                       <p className="text-sm">
+                        Risk:Reward: {trade.riskRewardRatio}:1
+                      </p>
+                      <p className="text-sm">
                         Rules: {trade.allRulesFollowed ? '✅ Perfect' : '❌ Imperfect'}
                       </p>
+                      {trade.notes && (
+                        <p className="text-sm text-muted-foreground">{trade.notes}</p>
+                      )}
                     </div>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteTrade(trade.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => startEdit(trade)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteTrade(trade.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* New Trade Form */}
+          {/* Trade Form */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Log New Trade</h3>
+            <h3 className="font-semibold">
+              {editingTrade ? 'Edit Trade' : 'Log New Trade'}
+            </h3>
             
             {/* Trading Rules Checklist */}
             <div className="space-y-2">
               <Label className="font-medium">Trading Rules Followed:</Label>
-              {profileRules.filter(rule => rule.isActive).map(rule => (
+              {profileRules.map(rule => (
                 <div key={rule.id} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -202,38 +271,13 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="entryPrice">Entry Price</Label>
+                  <Label htmlFor="pnlR">P&L (R)</Label>
                   <Input
-                    id="entryPrice"
-                    type="number"
-                    step="0.01"
-                    value={formData.entryPrice}
-                    onChange={(e) => setFormData({...formData, entryPrice: e.target.value})}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="exitPrice">Exit Price</Label>
-                  <Input
-                    id="exitPrice"
-                    type="number"
-                    step="0.01"
-                    value={formData.exitPrice}
-                    onChange={(e) => setFormData({...formData, exitPrice: e.target.value})}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="riskAmount">Risk Amount (%)</Label>
-                  <Input
-                    id="riskAmount"
+                    id="pnlR"
                     type="number"
                     step="0.1"
-                    value={formData.riskAmount}
-                    onChange={(e) => setFormData({...formData, riskAmount: e.target.value})}
+                    value={formData.pnlR}
+                    onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
                     required
                   />
                 </div>
@@ -261,8 +305,12 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">Log Trade</Button>
-                <Button type="button" variant="outline" onClick={resetForm}>Clear</Button>
+                <Button type="submit" className="flex-1">
+                  {editingTrade ? 'Update Trade' : 'Log Trade'}
+                </Button>
+                <Button type="button" variant="outline" onClick={resetForm}>
+                  {editingTrade ? 'Cancel' : 'Clear'}
+                </Button>
               </div>
             </form>
           </div>

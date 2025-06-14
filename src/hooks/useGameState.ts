@@ -23,6 +23,8 @@ export const useGameState = () => {
     type: 'achievement'
   });
 
+  const [lastProfileSwitchTime, setLastProfileSwitchTime] = useState(Date.now());
+
   // Save to localStorage whenever gameState changes
   useEffect(() => {
     localStorage.setItem('tradeHabitHero', JSON.stringify(gameState));
@@ -32,6 +34,13 @@ export const useGameState = () => {
     setGameState(prevState => {
       const newState = updater(prevState);
       const oldStreak = prevState.currentStreak;
+      const oldActiveProfile = prevState.activeProfile;
+      
+      // Check if this is a profile switch
+      const isProfileSwitch = newState.activeProfile !== oldActiveProfile;
+      if (isProfileSwitch) {
+        setLastProfileSwitchTime(Date.now());
+      }
       
       // Recalculate streak after any change
       const updatedStreak = calculateStreak(newState);
@@ -42,35 +51,41 @@ export const useGameState = () => {
         currentStreak: updatedStreak
       });
 
-      // Check for new streak milestones
-      const streakMilestones = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
-      const newMilestone = streakMilestones.find(m => m === updatedStreak && m > oldStreak);
-      
-      if (newMilestone) {
-        const achievement = updatedAchievements.find(a => a.type === 'streak' && a.criteria.streak === newMilestone);
-        if (achievement) {
+      // Only show celebrations if not a recent profile switch (within 1 second)
+      const timeSinceProfileSwitch = Date.now() - lastProfileSwitchTime;
+      const shouldShowCelebrations = !isProfileSwitch && timeSinceProfileSwitch > 1000;
+
+      if (shouldShowCelebrations) {
+        // Check for new streak milestones
+        const streakMilestones = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+        const newMilestone = streakMilestones.find(m => m === updatedStreak && m > oldStreak);
+        
+        if (newMilestone) {
+          const achievement = updatedAchievements.find(a => a.type === 'streak' && a.criteria.streak === newMilestone);
+          if (achievement) {
+            setCelebration({
+              isOpen: true,
+              title: achievement.name,
+              description: achievement.description,
+              type: 'streak'
+            });
+          }
+        }
+
+        // Check for new achievement unlocks
+        const newAchievements = updatedAchievements.filter(a => 
+          a.isUnlocked && !prevState.achievements.find(pa => pa.id === a.id && pa.isUnlocked)
+        );
+        
+        if (newAchievements.length > 0 && !newMilestone) {
+          const achievement = newAchievements[0];
           setCelebration({
             isOpen: true,
             title: achievement.name,
             description: achievement.description,
-            type: 'streak'
+            type: 'achievement'
           });
         }
-      }
-
-      // Check for new achievement unlocks
-      const newAchievements = updatedAchievements.filter(a => 
-        a.isUnlocked && !prevState.achievements.find(pa => pa.id === a.id && pa.isUnlocked)
-      );
-      
-      if (newAchievements.length > 0 && !newMilestone) {
-        const achievement = newAchievements[0];
-        setCelebration({
-          isOpen: true,
-          title: achievement.name,
-          description: achievement.description,
-          type: 'achievement'
-        });
       }
       
       return {

@@ -15,6 +15,36 @@ interface CelebrationModalProps {
 export const CelebrationModal = ({ isOpen, onClose, title, description, type }: CelebrationModalProps) => {
   useEffect(() => {
     if (isOpen) {
+      // Play achievement sound
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        const playTone = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+          oscillator.type = type;
+          
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+          
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + duration);
+        };
+
+        // Victory sound - ascending notes
+        playTone(523, 0.2); // C
+        setTimeout(() => playTone(659, 0.2), 100); // E
+        setTimeout(() => playTone(784, 0.3), 200); // G
+        setTimeout(() => playTone(1047, 0.4), 300); // High C
+      } catch (error) {
+        console.warn('Audio playback failed:', error);
+      }
+
       // Create confetti effect
       const canvas = document.createElement('canvas');
       canvas.style.position = 'fixed';
@@ -88,15 +118,6 @@ export const CelebrationModal = ({ isOpen, onClose, title, description, type }: 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        
         <DialogHeader className="text-center space-y-4">
           <div className="flex justify-center">
             <Trophy className="h-16 w-16 text-yellow-500 animate-bounce" />
@@ -108,6 +129,12 @@ export const CelebrationModal = ({ isOpen, onClose, title, description, type }: 
             {description}
           </p>
         </DialogHeader>
+        
+        <div className="flex justify-center pt-4">
+          <Button onClick={onClose} className="px-8">
+            Awesome!
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

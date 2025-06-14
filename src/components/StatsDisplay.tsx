@@ -6,9 +6,10 @@ import { GameState } from '@/types/gameState';
 
 interface StatsDisplayProps {
   gameState: GameState;
+  playSound?: (soundType: 'check' | 'win' | 'click' | 'achievement' | 'perfect-day') => void;
 }
 
-export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
+export const StatsDisplay = ({ gameState, playSound }: StatsDisplayProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const currentTrades = gameState.trades[gameState.activeProfile];
@@ -28,10 +29,17 @@ export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
   const largestWin = currentTrades.length > 0 ? Math.max(...currentTrades.map(t => t.pnlR)) : 0;
   const largestLoss = currentTrades.length > 0 ? Math.min(...currentTrades.map(t => t.pnlR)) : 0;
 
+  const handleToggle = () => {
+    if (playSound) {
+      playSound('click');
+    }
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <div className="space-y-4">
       <Button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
         variant="outline"
         className="w-full flex items-center justify-between"
       >
@@ -45,7 +53,7 @@ export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="text-center p-3 bg-muted/50 rounded">
               <p className="font-medium text-muted-foreground">Total Trades</p>
-              <p className="text-2xl font-bold">{totalTrades}</p>
+              <p className="text-2xl font-bold text-foreground">{totalTrades}</p>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded">
               <p className="font-medium text-muted-foreground">Current Streak</p>
@@ -55,15 +63,15 @@ export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
 
           {/* P&L Stats */}
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="text-center p-3 bg-muted/50 rounded">
-              <p className="font-medium text-muted-foreground">Total P&L</p>
-              <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-center p-3 rounded ${totalPnL >= 0 ? 'bg-green-500' : 'bg-red-500'}`}>
+              <p className="font-medium text-white">Total P&L</p>
+              <p className="text-2xl font-bold text-white">
                 {totalPnL >= 0 ? '+' : ''}{totalPnL.toFixed(2)}R
               </p>
             </div>
-            <div className="text-center p-3 bg-muted/50 rounded">
-              <p className="font-medium text-muted-foreground">Average P&L</p>
-              <p className={`text-2xl font-bold ${averagePnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-center p-3 rounded ${averagePnL >= 0 ? 'bg-green-500' : 'bg-red-500'}`}>
+              <p className="font-medium text-white">Average P&L</p>
+              <p className="text-2xl font-bold text-white">
                 {averagePnL >= 0 ? '+' : ''}{averagePnL.toFixed(2)}R
               </p>
             </div>
@@ -71,31 +79,31 @@ export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
 
           {/* Win/Loss Stats */}
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded">
-              <p className="font-medium text-green-700 dark:text-green-300">Wins</p>
-              <p className="text-xl font-bold text-green-500">{winningTrades}</p>
+            <div className="text-center p-3 bg-green-500 rounded">
+              <p className="font-medium text-white">Wins</p>
+              <p className="text-xl font-bold text-white">{winningTrades}</p>
             </div>
-            <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded">
-              <p className="font-medium text-red-700 dark:text-red-300">Losses</p>
-              <p className="text-xl font-bold text-red-500">{losingTrades}</p>
+            <div className="text-center p-3 bg-red-500 rounded">
+              <p className="font-medium text-white">Losses</p>
+              <p className="text-xl font-bold text-white">{losingTrades}</p>
             </div>
-            <div className="text-center p-3 bg-gray-50 dark:bg-gray-950 rounded">
-              <p className="font-medium text-gray-700 dark:text-gray-300">Breakeven</p>
-              <p className="text-xl font-bold text-gray-600">{breakevenTrades}</p>
+            <div className="text-center p-3 bg-gray-500 rounded">
+              <p className="font-medium text-white">Breakeven</p>
+              <p className="text-xl font-bold text-white">{breakevenTrades}</p>
             </div>
           </div>
 
           {/* Win Rates */}
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded">
-              <p className="font-medium text-blue-700 dark:text-blue-300">Win Rate</p>
-              <p className={`text-xl font-bold ${winRate >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-center p-3 rounded ${winRate >= 50 ? 'bg-green-500' : 'bg-red-500'}`}>
+              <p className="font-medium text-white">Win Rate</p>
+              <p className="text-xl font-bold text-white">
                 {winRate.toFixed(1)}%
               </p>
             </div>
-            <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded">
-              <p className="font-medium text-purple-700 dark:text-purple-300">Rules Win Rate</p>
-              <p className={`text-xl font-bold ${rulesWinRate >= 50 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-center p-3 rounded ${rulesWinRate >= 50 ? 'bg-green-500' : 'bg-red-500'}`}>
+              <p className="font-medium text-white">Rules Win Rate</p>
+              <p className="text-xl font-bold text-white">
                 {rulesWinRate.toFixed(1)}%
               </p>
             </div>
@@ -103,26 +111,26 @@ export const StatsDisplay = ({ gameState }: StatsDisplayProps) => {
 
           {/* Rules Stats */}
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded">
-              <p className="font-medium text-green-700 dark:text-green-300">Rules Followed</p>
-              <p className="text-xl font-bold text-green-500">{perfectTrades}</p>
+            <div className="text-center p-3 bg-green-500 rounded">
+              <p className="font-medium text-white">Rules Followed</p>
+              <p className="text-xl font-bold text-white">{perfectTrades}</p>
             </div>
-            <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded">
-              <p className="font-medium text-red-700 dark:text-red-300">Rules Broken</p>
-              <p className="text-xl font-bold text-red-500">{imperfectTrades}</p>
+            <div className="text-center p-3 bg-red-500 rounded">
+              <p className="font-medium text-white">Rules Broken</p>
+              <p className="text-xl font-bold text-white">{imperfectTrades}</p>
             </div>
           </div>
 
           {/* Best/Worst */}
           {totalTrades > 0 && (
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="text-center p-3 bg-emerald-50 dark:bg-emerald-950 rounded">
-                <p className="font-medium text-emerald-700 dark:text-emerald-300">Largest Win</p>
-                <p className="text-xl font-bold text-green-500">+{largestWin.toFixed(2)}R</p>
+              <div className="text-center p-3 bg-green-500 rounded">
+                <p className="font-medium text-white">Largest Win</p>
+                <p className="text-xl font-bold text-white">+{largestWin.toFixed(2)}R</p>
               </div>
-              <div className="text-center p-3 bg-rose-50 dark:bg-rose-950 rounded">
-                <p className="font-medium text-rose-700 dark:text-rose-300">Largest Loss</p>
-                <p className="text-xl font-bold text-red-500">{largestLoss.toFixed(2)}R</p>
+              <div className="text-center p-3 bg-red-500 rounded">
+                <p className="font-medium text-white">Largest Loss</p>
+                <p className="text-xl font-bold text-white">{largestLoss.toFixed(2)}R</p>
               </div>
             </div>
           )}
