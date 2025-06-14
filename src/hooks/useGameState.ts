@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { GameState, Trade, Achievement } from '@/types/gameState';
 import { calculateStreak } from '@/utils/streakCalculator';
@@ -57,34 +56,18 @@ export const useGameState = () => {
       const shouldShowCelebrations = !isProfileSwitch && timeSinceProfileSwitch > 1000;
 
       if (shouldShowCelebrations) {
-        // Check for new streak milestones
-        const streakMilestones = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
-        const newMilestone = streakMilestones.find(m => m === updatedStreak && m > oldStreak);
-        
-        if (newMilestone) {
-          const achievement = updatedAchievements.find(a => a.type === 'streak' && a.criteria.streak === newMilestone);
-          if (achievement) {
-            setCelebration({
-              isOpen: true,
-              title: achievement.name,
-              description: achievement.description,
-              type: 'streak'
-            });
-          }
-        }
-
         // Check for new achievement unlocks (any type)
         const newAchievements = updatedAchievements.filter(a => 
           a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
         );
         
-        if (newAchievements.length > 0 && !newMilestone) {
+        if (newAchievements.length > 0) {
           const achievement = newAchievements[0];
           setCelebration({
             isOpen: true,
             title: achievement.name,
             description: achievement.description,
-            type: 'achievement'
+            type: achievement.type === 'streak' ? 'streak' : 'achievement'
           });
         }
       }
