@@ -20,7 +20,7 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
   return (
     <div className="text-center space-y-4 p-4 border rounded-lg">
       <div className="flex items-center justify-center gap-2">
-        <span className="text-lg font-semibold">Streak: {streak} Days</span>
+        <span className="text-lg font-semibold text-foreground">Streak: {streak} Days</span>
         {streak > 0 && (
           <span className="text-2xl animate-pulse">🔥</span>
         )}

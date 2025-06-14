@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 interface CelebrationModalProps {
   isOpen: boolean;

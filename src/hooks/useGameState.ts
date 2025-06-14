@@ -35,6 +35,7 @@ export const useGameState = () => {
       const newState = updater(prevState);
       const oldStreak = prevState.currentStreak;
       const oldActiveProfile = prevState.activeProfile;
+      const oldAchievements = prevState.achievements;
       
       // Check if this is a profile switch
       const isProfileSwitch = newState.activeProfile !== oldActiveProfile;
@@ -72,9 +73,9 @@ export const useGameState = () => {
           }
         }
 
-        // Check for new achievement unlocks
+        // Check for new achievement unlocks (any type)
         const newAchievements = updatedAchievements.filter(a => 
-          a.isUnlocked && !prevState.achievements.find(pa => pa.id === a.id && pa.isUnlocked)
+          a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
         );
         
         if (newAchievements.length > 0 && !newMilestone) {
