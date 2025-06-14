@@ -11,6 +11,18 @@ export const useGameState = () => {
     return saved ? JSON.parse(saved) : getDefaultGameState();
   });
 
+  const [celebration, setCelebration] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    type: 'achievement' | 'streak';
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'achievement'
+  });
+
   // Save to localStorage whenever gameState changes
   useEffect(() => {
     localStorage.setItem('tradeHabitHero', JSON.stringify(gameState));
@@ -19,6 +31,7 @@ export const useGameState = () => {
   const updateGameState = (updater: (prevState: GameState) => GameState) => {
     setGameState(prevState => {
       const newState = updater(prevState);
+      const oldStreak = prevState.currentStreak;
       
       // Recalculate streak after any change
       const updatedStreak = calculateStreak(newState);
@@ -28,6 +41,37 @@ export const useGameState = () => {
         ...newState,
         currentStreak: updatedStreak
       });
+
+      // Check for new streak milestones
+      const streakMilestones = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+      const newMilestone = streakMilestones.find(m => m === updatedStreak && m > oldStreak);
+      
+      if (newMilestone) {
+        const achievement = updatedAchievements.find(a => a.type === 'streak' && a.criteria.streak === newMilestone);
+        if (achievement) {
+          setCelebration({
+            isOpen: true,
+            title: achievement.name,
+            description: achievement.description,
+            type: 'streak'
+          });
+        }
+      }
+
+      // Check for new achievement unlocks
+      const newAchievements = updatedAchievements.filter(a => 
+        a.isUnlocked && !prevState.achievements.find(pa => pa.id === a.id && pa.isUnlocked)
+      );
+      
+      if (newAchievements.length > 0 && !newMilestone) {
+        const achievement = newAchievements[0];
+        setCelebration({
+          isOpen: true,
+          title: achievement.name,
+          description: achievement.description,
+          type: 'achievement'
+        });
+      }
       
       return {
         ...newState,
@@ -38,5 +82,9 @@ export const useGameState = () => {
     });
   };
 
-  return { gameState, updateGameState };
+  const closeCelebration = () => {
+    setCelebration(prev => ({ ...prev, isOpen: false }));
+  };
+
+  return { gameState, updateGameState, celebration, closeCelebration };
 };

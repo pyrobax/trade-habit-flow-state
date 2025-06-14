@@ -63,12 +63,16 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
     hasTradesGood: {
       backgroundColor: '#22c55e',
       color: 'white',
-      borderRadius: '50%'
+      borderRadius: '4px',
+      width: '100%',
+      height: '100%'
     },
     hasTradesBad: {
       backgroundColor: '#ef4444',
       color: 'white',
-      borderRadius: '50%'
+      borderRadius: '4px',
+      width: '100%',
+      height: '100%'
     }
   };
 
@@ -107,9 +111,16 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
             DayContent: ({ date }) => {
               const trades = getTradesForDate(date);
               const pnl = getDayPnL(date);
+              const hasGoodTrades = trades.length > 0 && trades.every(trade => trade.allRulesFollowed);
+              const hasBadTrades = trades.length > 0 && !trades.every(trade => trade.allRulesFollowed);
+              
               return (
-                <div className="relative w-full h-full flex flex-col items-center justify-center">
-                  <span>{date.getDate()}</span>
+                <div className={`
+                  relative w-full h-full flex flex-col items-center justify-center min-h-[36px] rounded
+                  ${hasGoodTrades ? 'bg-green-500 text-white' : ''}
+                  ${hasBadTrades ? 'bg-red-500 text-white' : ''}
+                `}>
+                  <span className="text-sm">{date.getDate()}</span>
                   {trades.length > 0 && (
                     <span className="text-xs font-bold">
                       {pnl >= 0 ? '+' : ''}{pnl.toFixed(1)}R
@@ -125,11 +136,11 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
       <div className="text-center space-y-2">
         <div className="flex justify-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <div className="w-4 h-4 bg-green-500 rounded"></div>
             <span>Perfect Day</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+            <div className="w-4 h-4 bg-red-500 rounded"></div>
             <span>Imperfect Day</span>
           </div>
         </div>

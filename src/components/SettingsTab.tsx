@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { ChevronDown, ChevronUp, Download, Upload, RotateCcw, Plus, Trash2, Trophy, Lock } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, Upload, RotateCcw, Plus, Trash2, Trophy, Lock, Edit2, Check, X } from 'lucide-react';
 import { GameState } from '@/types/gameState';
 import { getDefaultGameState } from '@/utils/defaultData';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,6 +18,8 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<'usa-indices' | 'aud-nzd-pairs'>('usa-indices');
   const [newRule, setNewRule] = useState('');
+  const [editingRule, setEditingRule] = useState<string | null>(null);
+  const [editRuleText, setEditRuleText] = useState('');
   const { theme, toggleTheme } = useTheme();
 
   const toggleSection = (section: string) => {
@@ -87,6 +89,36 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
       }
     }));
     setNewRule('');
+  };
+
+  const startEditRule = (ruleId: string, currentText: string) => {
+    setEditingRule(ruleId);
+    setEditRuleText(currentText);
+  };
+
+  const saveRuleEdit = (ruleId: string) => {
+    if (!editRuleText.trim()) return;
+    
+    updateGameState(state => ({
+      ...state,
+      profiles: {
+        ...state.profiles,
+        [selectedProfile]: {
+          ...state.profiles[selectedProfile],
+          rules: state.profiles[selectedProfile].rules.map(rule =>
+            rule.id === ruleId ? { ...rule, text: editRuleText.trim() } : rule
+          )
+        }
+      }
+    }));
+    
+    setEditingRule(null);
+    setEditRuleText('');
+  };
+
+  const cancelRuleEdit = () => {
+    setEditingRule(null);
+    setEditRuleText('');
   };
 
   const deleteRule = (ruleId: string) => {
@@ -223,14 +255,42 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
               <Label>Current Rules for {gameState.profiles[selectedProfile].name}</Label>
               {gameState.profiles[selectedProfile].rules.map(rule => (
                 <div key={rule.id} className="flex items-center justify-between p-2 border rounded">
-                  <span className="text-sm flex-1">{rule.text}</span>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => deleteRule(rule.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {editingRule === rule.id ? (
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input
+                        value={editRuleText}
+                        onChange={(e) => setEditRuleText(e.target.value)}
+                        className="flex-1"
+                        onKeyPress={(e) => e.key === 'Enter' && saveRuleEdit(rule.id)}
+                      />
+                      <Button size="sm" onClick={() => saveRuleEdit(rule.id)}>
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={cancelRuleEdit}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-sm flex-1">{rule.text}</span>
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => startEditRule(rule.id, rule.text)}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteRule(rule.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

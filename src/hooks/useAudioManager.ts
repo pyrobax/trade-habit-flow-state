@@ -2,9 +2,8 @@
 import { useCallback } from 'react';
 
 export const useAudioManager = () => {
-  const playSound = useCallback((soundType: 'check' | 'win' | 'click') => {
+  const playSound = useCallback((soundType: 'check' | 'win' | 'click' | 'achievement' | 'perfect-day') => {
     try {
-      // Create audio context for Web Audio API
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
       const playTone = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
@@ -26,13 +25,18 @@ export const useAudioManager = () => {
 
       switch (soundType) {
         case 'check':
-          playTone(800, 0.1);
+          // Game-like pickup sound
+          playTone(880, 0.1);
+          setTimeout(() => playTone(1100, 0.1), 50);
           break;
         case 'win':
+        case 'achievement':
+        case 'perfect-day':
           // Victory sound - ascending notes
           playTone(523, 0.2); // C
           setTimeout(() => playTone(659, 0.2), 100); // E
           setTimeout(() => playTone(784, 0.3), 200); // G
+          setTimeout(() => playTone(1047, 0.4), 300); // High C
           break;
         case 'click':
           playTone(400, 0.05);

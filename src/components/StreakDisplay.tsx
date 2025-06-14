@@ -27,7 +27,12 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
       </div>
       
       <div className="space-y-2">
-        <Progress value={progress} className="h-3" />
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div 
+            className="bg-green-500 h-3 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
         <div className="text-sm text-muted-foreground">
           {streak < nextMilestone ? (
             `${nextMilestone - streak} days to next milestone`

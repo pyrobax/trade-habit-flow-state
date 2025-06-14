@@ -12,17 +12,15 @@ import { v4 as uuidv4 } from 'uuid';
 interface TradeFormProps {
   gameState: GameState;
   updateGameState: (updater: (prevState: GameState) => GameState) => void;
-  playSound: (soundType: 'check' | 'win' | 'click') => void;
+  playSound: (soundType: 'check' | 'win' | 'click' | 'achievement' | 'perfect-day') => void;
 }
 
 export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [formData, setFormData] = useState({
     symbol: '',
-    entryPrice: '',
-    exitPrice: '',
     position: 'long' as 'long' | 'short',
-    riskAmount: '',
+    pnlR: '',
     riskRewardRatio: '',
     notes: ''
   });
@@ -38,10 +36,8 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
   const resetForm = () => {
     setFormData({
       symbol: '',
-      entryPrice: '',
-      exitPrice: '',
       position: 'long',
-      riskAmount: '',
+      pnlR: '',
       riskRewardRatio: '',
       notes: ''
     });
@@ -60,28 +56,18 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const entryPrice = parseFloat(formData.entryPrice);
-    const exitPrice = parseFloat(formData.exitPrice);
-    const riskAmount = parseFloat(formData.riskAmount);
+    const pnlR = parseFloat(formData.pnlR);
     const riskRewardRatio = parseFloat(formData.riskRewardRatio);
-    
-    let pnlR = 0;
-    if (formData.position === 'long') {
-      pnlR = ((exitPrice - entryPrice) / entryPrice) * 100 / riskAmount;
-    } else {
-      pnlR = ((entryPrice - exitPrice) / entryPrice) * 100 / riskAmount;
-    }
-
     const today = new Date().toISOString().split('T')[0];
 
     const newTrade: Trade = {
       id: uuidv4(),
       date: today,
       symbol: formData.symbol,
-      entryPrice,
-      exitPrice,
+      entryPrice: 0, // Not used but required by type
+      exitPrice: 0, // Not used but required by type
       position: formData.position,
-      riskAmount,
+      riskAmount: 1, // Not used but required by type
       pnlR,
       riskRewardRatio,
       rulesFollowed: selectedRules,
@@ -98,7 +84,7 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
     }));
 
     if (newTrade.allRulesFollowed) {
-      playSound('win');
+      playSound('perfect-day');
     }
 
     resetForm();
@@ -165,38 +151,13 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="entryPrice">Entry Price</Label>
+                <Label htmlFor="pnlR">P&L (R)</Label>
                 <Input
-                  id="entryPrice"
-                  type="number"
-                  step="0.01"
-                  value={formData.entryPrice}
-                  onChange={(e) => setFormData({...formData, entryPrice: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="exitPrice">Exit Price</Label>
-                <Input
-                  id="exitPrice"
-                  type="number"
-                  step="0.01"
-                  value={formData.exitPrice}
-                  onChange={(e) => setFormData({...formData, exitPrice: e.target.value})}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="riskAmount">Risk Amount (%)</Label>
-                <Input
-                  id="riskAmount"
+                  id="pnlR"
                   type="number"
                   step="0.1"
-                  value={formData.riskAmount}
-                  onChange={(e) => setFormData({...formData, riskAmount: e.target.value})}
+                  value={formData.pnlR}
+                  onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
                   required
                 />
               </div>
