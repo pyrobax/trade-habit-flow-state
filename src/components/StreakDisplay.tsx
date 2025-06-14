@@ -42,7 +42,7 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
         </div>
       </div>
       
-      <div className="text-lg font-medium text-foreground">
+      <div className="text-lg font-medium text-green-500">
         {getStreakTitle(streak)}
       </div>
     </div>
