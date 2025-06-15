@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +20,8 @@ export const SettingsTab = ({ gameState, updateGameState, playSound }: SettingsT
   const [newRule, setNewRule] = useState('');
   const [editingRule, setEditingRule] = useState<string | null>(null);
   const [editRuleText, setEditRuleText] = useState('');
+  const [editingProfileName, setEditingProfileName] = useState<'usa-indices' | 'aud-nzd-pairs' | null>(null);
+  const [editProfileNameText, setEditProfileNameText] = useState('');
   const { theme, toggleTheme } = useTheme();
 
   const toggleSection = (section: string) => {
@@ -35,6 +36,37 @@ export const SettingsTab = ({ gameState, updateGameState, playSound }: SettingsT
   const handleProfileChange = (profile: 'usa-indices' | 'aud-nzd-pairs') => {
     playSound?.('click');
     setSelectedProfile(profile);
+  };
+
+  const startEditProfileName = (profile: 'usa-indices' | 'aud-nzd-pairs') => {
+    playSound?.('click');
+    setEditingProfileName(profile);
+    setEditProfileNameText(gameState.profiles[profile].name);
+  };
+
+  const saveProfileName = (profile: 'usa-indices' | 'aud-nzd-pairs') => {
+    playSound?.('click');
+    if (!editProfileNameText.trim()) return;
+    
+    updateGameState(state => ({
+      ...state,
+      profiles: {
+        ...state.profiles,
+        [profile]: {
+          ...state.profiles[profile],
+          name: editProfileNameText.trim()
+        }
+      }
+    }));
+    
+    setEditingProfileName(null);
+    setEditProfileNameText('');
+  };
+
+  const cancelProfileNameEdit = () => {
+    playSound?.('click');
+    setEditingProfileName(null);
+    setEditProfileNameText('');
   };
 
   const exportData = () => {
@@ -231,6 +263,42 @@ export const SettingsTab = ({ gameState, updateGameState, playSound }: SettingsT
         
         {expandedSections.includes('profiles') && (
           <div className="p-4 border rounded-lg space-y-4">
+            {/* Profile Names Editor */}
+            <div className="space-y-3">
+              <Label>Profile Names</Label>
+              {(['usa-indices', 'aud-nzd-pairs'] as const).map(profileKey => (
+                <div key={profileKey} className="flex items-center justify-between p-3 border rounded">
+                  {editingProfileName === profileKey ? (
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input
+                        value={editProfileNameText}
+                        onChange={(e) => setEditProfileNameText(e.target.value)}
+                        className="flex-1"
+                        onKeyPress={(e) => e.key === 'Enter' && saveProfileName(profileKey)}
+                      />
+                      <Button size="sm" onClick={() => saveProfileName(profileKey)}>
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={cancelProfileNameEdit}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="font-medium">{gameState.profiles[profileKey].name}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startEditProfileName(profileKey)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+
             {/* Profile Selector */}
             <div className="flex gap-2">
               <Button
@@ -238,14 +306,14 @@ export const SettingsTab = ({ gameState, updateGameState, playSound }: SettingsT
                 onClick={() => handleProfileChange('usa-indices')}
                 className="flex-1"
               >
-                USA Indices
+                {gameState.profiles['usa-indices'].name}
               </Button>
               <Button
                 variant={selectedProfile === 'aud-nzd-pairs' ? 'default' : 'outline'}
                 onClick={() => handleProfileChange('aud-nzd-pairs')}
                 className="flex-1"
               >
-                AUD/NZD Pairs
+                {gameState.profiles['aud-nzd-pairs'].name}
               </Button>
             </div>
 
