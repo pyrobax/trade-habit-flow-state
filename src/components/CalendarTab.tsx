@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { GameState } from '@/types/gameState';
@@ -68,15 +67,15 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
   };
 
   return (
-    <div className="space-y-6 h-full">
-      <div className="text-center">
+    <div className="space-y-6 h-full -mx-4">
+      <div className="text-center px-4">
         <h1 className="text-2xl font-bold">Trading Calendar</h1>
         <p className="text-muted-foreground">
           Active Profile: {gameState.profiles[gameState.activeProfile].name}
         </p>
       </div>
 
-      <div className="bg-card rounded-lg p-4 flex-1 min-h-[600px] w-full">
+      <div className="bg-card rounded-lg p-2 flex-1 min-h-[600px] mx-2">
         <Calendar
           mode="single"
           selected={selectedDate}
@@ -89,9 +88,9 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
             month: "space-y-4 flex-1 w-full",
             table: "w-full border-collapse space-y-1 h-full",
             head_row: "flex w-full",
-            head_cell: "text-muted-foreground rounded-md font-normal text-sm flex-1 min-w-[50px]",
+            head_cell: "text-muted-foreground rounded-md font-normal text-sm flex-1",
             row: "flex w-full mt-2",
-            cell: "h-16 text-center text-sm p-0 relative flex-1 min-w-[50px] [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+            cell: "h-16 text-center text-sm p-0 relative flex-1 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
             day: "h-16 w-full p-0 font-normal aria-selected:opacity-100 rounded-md",
           }}
           components={{
@@ -120,7 +119,7 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
         />
       </div>
 
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 px-4">
         <div className="flex justify-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded"></div>
