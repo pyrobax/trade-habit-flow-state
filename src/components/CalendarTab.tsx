@@ -76,7 +76,7 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
         </p>
       </div>
 
-      <div className="bg-card rounded-lg p-4 flex-1 min-h-[600px] mx-auto max-w-4xl">
+      <div className="bg-card rounded-lg p-4 flex-1 min-h-[600px] w-full">
         <Calendar
           mode="single"
           selected={selectedDate}
