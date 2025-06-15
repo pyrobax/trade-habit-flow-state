@@ -1,4 +1,3 @@
-
 import { Progress } from '@/components/ui/progress';
 import { getStreakTitle } from '@/utils/streakCalculator';
 
@@ -42,7 +41,7 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
         </div>
       </div>
       
-      <div className="text-lg font-medium text-green-500">
+      <div className="text-lg font-medium text-foreground">
         {getStreakTitle(streak)}
       </div>
     </div>
