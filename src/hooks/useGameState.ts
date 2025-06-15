@@ -32,7 +32,7 @@ export const useGameState = () => {
     type: 'achievement'
   });
 
-  const [lastProfileSwitchTime, setLastProfileSwitchTime] = useState(Date.now());
+  const [lastProfileSwitchTime, setLastProfileSwitchTime] = useState(0);
 
   // Save to localStorage whenever gameState changes
   useEffect(() => {
@@ -62,7 +62,7 @@ export const useGameState = () => {
       });
 
       // Only show celebrations if not a recent profile switch (within 1 second)
-      const timeSinceProfileSwitch = Date.now() - lastProfileSwitchTime;
+      const timeSinceProfileSwitch = lastProfileSwitchTime > 0 ? Date.now() - lastProfileSwitchTime : Infinity;
       const shouldShowCelebrations = !isProfileSwitch && timeSinceProfileSwitch > 1000;
 
       if (shouldShowCelebrations) {
