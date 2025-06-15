@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +23,8 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
     position: 'long' as 'long' | 'short',
     pnlR: '',
     riskRewardRatio: '',
-    notes: ''
+    notes: '',
+    reviewLink: ''
   });
   const [selectedRules, setSelectedRules] = useState<string[]>([]);
 
@@ -39,7 +41,8 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
       position: 'long',
       pnlR: '',
       riskRewardRatio: '',
-      notes: ''
+      notes: '',
+      reviewLink: ''
     });
     setSelectedRules([]);
   };
@@ -72,7 +75,8 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
       riskRewardRatio,
       rulesFollowed: selectedRules,
       allRulesFollowed: selectedRules.length === profileRules.length,
-      notes: formData.notes
+      notes: formData.notes,
+      reviewLink: formData.reviewLink
     };
 
     updateGameState(state => ({
@@ -181,6 +185,17 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
                 rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="reviewLink">Review Link (Optional)</Label>
+              <Input
+                id="reviewLink"
+                type="url"
+                placeholder="https://example.com/trade-review"
+                value={formData.reviewLink}
+                onChange={(e) => setFormData({...formData, reviewLink: e.target.value})}
               />
             </div>
 

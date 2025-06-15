@@ -1,4 +1,3 @@
-
 export interface Trade {
   id: string;
   date: string; // YYYY-MM-DD format
@@ -12,6 +11,7 @@ export interface Trade {
   rulesFollowed: string[]; // Array of rule IDs that were followed
   allRulesFollowed: boolean; // True if all rules were followed (perfect trade)
   notes?: string;
+  reviewLink?: string;
 }
 
 export interface TradingRule {

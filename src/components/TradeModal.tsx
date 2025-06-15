@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit, ExternalLink } from 'lucide-react';
 import { GameState, Trade } from '@/types/gameState';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,7 +25,8 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
     position: 'long' as 'long' | 'short',
     pnlR: '',
     riskRewardRatio: '',
-    notes: ''
+    notes: '',
+    reviewLink: ''
   });
   const [selectedRules, setSelectedRules] = useState<string[]>([]);
   const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
@@ -39,7 +41,8 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       position: 'long',
       pnlR: '',
       riskRewardRatio: '',
-      notes: ''
+      notes: '',
+      reviewLink: ''
     });
     setSelectedRules([]);
     setEditingTrade(null);
@@ -51,7 +54,8 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       position: trade.position,
       pnlR: trade.pnlR.toString(),
       riskRewardRatio: trade.riskRewardRatio.toString(),
-      notes: trade.notes || ''
+      notes: trade.notes || '',
+      reviewLink: trade.reviewLink || ''
     });
     setSelectedRules(trade.rulesFollowed);
     setEditingTrade(trade);
@@ -75,7 +79,8 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       riskRewardRatio,
       rulesFollowed: selectedRules,
       allRulesFollowed: selectedRules.length === profileRules.length,
-      notes: formData.notes
+      notes: formData.notes,
+      reviewLink: formData.reviewLink
     };
 
     updateGameState(state => {
@@ -197,6 +202,19 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                       {trade.notes && (
                         <p className="text-sm text-muted-foreground">{trade.notes}</p>
                       )}
+                      {trade.reviewLink && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(trade.reviewLink, '_blank')}
+                            className="text-xs"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Review
+                          </Button>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -302,6 +320,17 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                   rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="reviewLink">Review Link (Optional)</Label>
+                <Input
+                  id="reviewLink"
+                  type="url"
+                  placeholder="https://example.com/trade-review"
+                  value={formData.reviewLink}
+                  onChange={(e) => setFormData({...formData, reviewLink: e.target.value})}
                 />
               </div>
 
