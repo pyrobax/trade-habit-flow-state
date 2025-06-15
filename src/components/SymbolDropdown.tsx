@@ -17,6 +17,7 @@ interface SymbolDropdownProps {
 export const SymbolDropdown = ({ value, onChange, gameState, updateGameState }: SymbolDropdownProps) => {
   const [showAddNew, setShowAddNew] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
+  const [showManageSymbols, setShowManageSymbols] = useState(false);
 
   const addNewSymbol = () => {
     if (newSymbol.trim() && !gameState.symbols.includes(newSymbol.trim().toUpperCase())) {
@@ -50,7 +51,7 @@ export const SymbolDropdown = ({ value, onChange, gameState, updateGameState }: 
   return (
     <div className="space-y-2">
       <Label htmlFor="symbol">Symbol</Label>
-      {!showAddNew ? (
+      {!showAddNew && !showManageSymbols ? (
         <div className="flex gap-2">
           <Select value={value} onValueChange={onChange}>
             <SelectTrigger className="flex-1">
@@ -59,20 +60,7 @@ export const SymbolDropdown = ({ value, onChange, gameState, updateGameState }: 
             <SelectContent>
               {gameState.symbols.map(symbol => (
                 <SelectItem key={symbol} value={symbol}>
-                  <div className="flex items-center justify-between w-full">
-                    <span>{symbol}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeSymbol(symbol);
-                      }}
-                      className="h-4 w-4 p-0 ml-2"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  {symbol}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -82,11 +70,21 @@ export const SymbolDropdown = ({ value, onChange, gameState, updateGameState }: 
             variant="outline"
             size="sm"
             onClick={() => setShowAddNew(true)}
+            title="Add new symbol"
           >
             <Plus className="h-4 w-4" />
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowManageSymbols(true)}
+            title="Manage symbols"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-      ) : (
+      ) : showAddNew ? (
         <div className="flex gap-2">
           <Input
             value={newSymbol}
@@ -113,6 +111,34 @@ export const SymbolDropdown = ({ value, onChange, gameState, updateGameState }: 
             }}
           >
             Cancel
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="text-sm font-medium">Manage Symbols</div>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
+            {gameState.symbols.map(symbol => (
+              <div key={symbol} className="flex items-center justify-between p-2 border rounded">
+                <span className="text-sm">{symbol}</span>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => removeSymbol(symbol)}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowManageSymbols(false)}
+          >
+            Done
           </Button>
         </div>
       )}
