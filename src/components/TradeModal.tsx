@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -179,11 +180,11 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
           {currentTrades.length > 0 && (
             <div className="space-y-3">
               <h3 className="font-semibold">Existing Trades</h3>
-              {currentTrades.map(trade => (
+              {currentTrades.map((trade, index) => (
                 <div key={trade.id} className="border rounded p-3 space-y-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{trade.symbol} - {trade.position.toUpperCase()}</p>
+                      <p className="font-medium">{index + 1}. {trade.symbol} - {trade.position.toUpperCase()}</p>
                       <p className={`text-sm font-bold ${trade.pnlR >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         P&L: {trade.pnlR >= 0 ? '+' : ''}{trade.pnlR.toFixed(2)}R
                       </p>
