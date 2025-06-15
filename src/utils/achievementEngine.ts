@@ -21,7 +21,7 @@ export const checkAchievements = (gameState: GameState): Achievement[] => {
   });
   
   // Check discipline achievements
-  checkStrategistAchievement(achievements, trades);
+  checkStrategistAchievement(achievements, allTrades);
   checkHighRollerAchievement(achievements, allTrades);
   checkRiskManagerAchievement(achievements, allTrades);
   checkComebackKingAchievement(achievements, allTrades);
@@ -41,35 +41,9 @@ const checkStrategistAchievement = (achievements: Achievement[], trades: Trade[]
   const achievement = achievements.find(a => a.id === 'strategist');
   if (!achievement || achievement.isUnlocked) return;
   
-  // Check for a perfect Mon-Sun week
-  const tradesByDate = trades.reduce((acc, trade) => {
-    if (!acc[trade.date]) acc[trade.date] = [];
-    acc[trade.date].push(trade);
-    return acc;
-  }, {} as Record<string, Trade[]>);
-  
-  // Find weeks where every trading day was perfect
-  for (const [date, dayTrades] of Object.entries(tradesByDate)) {
-    const dayOfWeek = new Date(date).getDay();
-    if (dayOfWeek === 1) { // Monday
-      let weekPerfect = true;
-      for (let i = 0; i < 7; i++) {
-        const checkDate = new Date(date);
-        checkDate.setDate(checkDate.getDate() + i);
-        const checkDateStr = checkDate.toISOString().split('T')[0];
-        const dayTrades = tradesByDate[checkDateStr];
-        
-        if (dayTrades && !dayTrades.every(t => t.allRulesFollowed)) {
-          weekPerfect = false;
-          break;
-        }
-      }
-      if (weekPerfect) {
-        achievement.isUnlocked = true;
-        break;
-      }
-    }
-  }
+  // Check for 5 trades with R:R >= 4.0
+  const highRrTrades = trades.filter(t => t.riskRewardRatio >= 4.0);
+  achievement.isUnlocked = highRrTrades.length >= 5;
 };
 
 const checkHighRollerAchievement = (achievements: Achievement[], trades: Trade[]) => {

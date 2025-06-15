@@ -32,10 +32,27 @@ export const useGameState = () => {
     type: 'achievement'
   });
 
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+
   // Save to localStorage whenever gameState changes
   useEffect(() => {
     localStorage.setItem('tradeHabitHero', JSON.stringify(gameState));
   }, [gameState]);
+
+  // Process celebration queue
+  useEffect(() => {
+    if (!celebration.isOpen && celebrationQueue.length > 0) {
+      const nextAchievement = celebrationQueue[0];
+      console.log('🎊 Showing next celebration:', nextAchievement.name);
+      setCelebration({
+        isOpen: true,
+        title: nextAchievement.name,
+        description: nextAchievement.description,
+        type: nextAchievement.type === 'streak' ? 'streak' : 'achievement'
+      });
+      setCelebrationQueue(prev => prev.slice(1));
+    }
+  }, [celebration.isOpen, celebrationQueue]);
 
   const updateGameState = (updater: (prevState: GameState) => GameState) => {
     setGameState(prevState => {
@@ -82,14 +99,8 @@ export const useGameState = () => {
 
       // Only show celebrations if NOT a profile switch AND there are new achievements
       if (!isProfileSwitch && newAchievements.length > 0) {
-        const achievement = newAchievements[0];
-        console.log('🎊 Setting celebration for:', achievement.name);
-        setCelebration({
-          isOpen: true,
-          title: achievement.name,
-          description: achievement.description,
-          type: achievement.type === 'streak' ? 'streak' : 'achievement'
-        });
+        console.log('🎊 Adding achievements to celebration queue:', newAchievements.length);
+        setCelebrationQueue(prev => [...prev, ...newAchievements]);
       } else {
         console.log('❌ No celebration - isProfileSwitch:', isProfileSwitch, 'newAchievements:', newAchievements.length);
       }
@@ -109,6 +120,7 @@ export const useGameState = () => {
   };
 
   console.log('🎭 Current celebration state:', celebration);
+  console.log('📋 Celebration queue:', celebrationQueue.length);
 
   return { gameState, updateGameState, celebration, closeCelebration };
 };
