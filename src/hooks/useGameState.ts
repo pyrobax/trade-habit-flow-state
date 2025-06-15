@@ -40,11 +40,13 @@ export const useGameState = () => {
   const updateGameState = (updater: (prevState: GameState) => GameState) => {
     setGameState(prevState => {
       console.log('🔄 UpdateGameState called');
+      
+      // Store ORIGINAL achievements before any processing
+      const originalAchievements = [...prevState.achievements];
+      console.log('📊 Original achievements:', originalAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
+      
       const newState = updater(prevState);
       const oldActiveProfile = prevState.activeProfile;
-      const oldAchievements = prevState.achievements;
-      
-      console.log('📊 Old achievements:', oldAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
       
       // Check if this is a profile switch
       const isProfileSwitch = newState.activeProfile !== oldActiveProfile;
@@ -62,10 +64,10 @@ export const useGameState = () => {
 
       console.log('🎯 New achievements:', updatedAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
 
-      // Check for new achievement unlocks - fix the comparison logic
+      // Check for new achievement unlocks - compare against ORIGINAL state
       const newAchievements = updatedAchievements.filter(newAchievement => {
-        const oldAchievement = oldAchievements.find(old => old.id === newAchievement.id);
-        const wasUnlocked = oldAchievement ? oldAchievement.isUnlocked : false;
+        const originalAchievement = originalAchievements.find(orig => orig.id === newAchievement.id);
+        const wasUnlocked = originalAchievement ? originalAchievement.isUnlocked : false;
         const isNowUnlocked = newAchievement.isUnlocked;
         
         console.log(`🔍 Checking achievement ${newAchievement.id}: was ${wasUnlocked}, now ${isNowUnlocked}`);
@@ -75,7 +77,7 @@ export const useGameState = () => {
       
       console.log('🎉 New unlocked achievements:', newAchievements);
 
-      // Only show celebrations if NOT a profile switch
+      // Only show celebrations if NOT a profile switch AND there are new achievements
       if (!isProfileSwitch && newAchievements.length > 0) {
         const achievement = newAchievements[0];
         console.log('🎊 Setting celebration for:', achievement.name);
@@ -85,6 +87,8 @@ export const useGameState = () => {
           description: achievement.description,
           type: achievement.type === 'streak' ? 'streak' : 'achievement'
         });
+      } else {
+        console.log('❌ No celebration - isProfileSwitch:', isProfileSwitch, 'newAchievements:', newAchievements.length);
       }
       
       return {
