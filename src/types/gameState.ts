@@ -48,6 +48,7 @@ export interface GameState {
   activeProfile: string;
   profiles: Record<string, ProfileConfig>;
   trades: Record<string, Trade[]>;
+  symbols: string[];
   currentStreak: number;
   streakMilestones: number[];
   achievements: Achievement[];

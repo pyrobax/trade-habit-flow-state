@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { GameState, Trade } from '@/types/gameState';
+import { SymbolDropdown } from '@/components/SymbolDropdown';
 import { v4 as uuidv4 } from 'uuid';
 
 interface TradeFormProps {
@@ -123,15 +124,12 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
           {/* Trade Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="symbol">Symbol</Label>
-                <Input
-                  id="symbol"
-                  value={formData.symbol}
-                  onChange={(e) => setFormData({...formData, symbol: e.target.value})}
-                  required
-                />
-              </div>
+              <SymbolDropdown
+                value={formData.symbol}
+                onChange={(value) => setFormData({...formData, symbol: value})}
+                gameState={gameState}
+                updateGameState={updateGameState}
+              />
               <div>
                 <Label htmlFor="position">Position</Label>
                 <Select
