@@ -35,6 +35,7 @@ export const HomeTab = ({ gameState, updateGameState, playSound }: HomeTabProps)
       
       <StatsDisplay 
         gameState={gameState}
+        playSound={playSound}
       />
     </div>
   );
