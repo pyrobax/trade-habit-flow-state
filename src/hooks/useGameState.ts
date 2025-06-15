@@ -62,10 +62,16 @@ export const useGameState = () => {
 
       console.log('🎯 New achievements:', updatedAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
 
-      // Check for new achievement unlocks (any type)
-      const newAchievements = updatedAchievements.filter(a => 
-        a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
-      );
+      // Check for new achievement unlocks - fix the comparison logic
+      const newAchievements = updatedAchievements.filter(newAchievement => {
+        const oldAchievement = oldAchievements.find(old => old.id === newAchievement.id);
+        const wasUnlocked = oldAchievement ? oldAchievement.isUnlocked : false;
+        const isNowUnlocked = newAchievement.isUnlocked;
+        
+        console.log(`🔍 Checking achievement ${newAchievement.id}: was ${wasUnlocked}, now ${isNowUnlocked}`);
+        
+        return !wasUnlocked && isNowUnlocked;
+      });
       
       console.log('🎉 New unlocked achievements:', newAchievements);
 
