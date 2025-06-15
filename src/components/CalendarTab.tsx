@@ -76,7 +76,7 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
         </p>
       </div>
 
-      <div className="bg-card rounded-lg p-4 flex-1 min-h-[500px]">
+      <div className="bg-card rounded-lg p-6 flex-1 min-h-[600px]">
         <Calendar
           mode="single"
           selected={selectedDate}
@@ -89,10 +89,10 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
             month: "space-y-4 flex-1",
             table: "w-full border-collapse space-y-1 h-full",
             head_row: "flex",
-            head_cell: "text-muted-foreground rounded-md w-full font-normal text-[0.8rem] flex-1",
+            head_cell: "text-muted-foreground rounded-md w-full font-normal text-sm flex-1",
             row: "flex w-full mt-2",
-            cell: "h-12 w-full text-center text-sm p-0 relative flex-1 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-            day: "h-12 w-full p-0 font-normal aria-selected:opacity-100 rounded-md",
+            cell: "h-16 w-full text-center text-sm p-0 relative flex-1 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+            day: "h-16 w-full p-0 font-normal aria-selected:opacity-100 rounded-md",
           }}
           components={{
             DayContent: ({ date }) => {
@@ -103,11 +103,11 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
               
               return (
                 <div className={`
-                  relative w-full h-full flex flex-col items-center justify-center min-h-[40px] rounded-md px-1
+                  relative w-full h-full flex flex-col items-center justify-center min-h-[56px] rounded-md px-1
                   ${hasGoodTrades ? 'bg-green-500 text-white' : ''}
                   ${hasBadTrades ? 'bg-red-500 text-white' : ''}
                 `}>
-                  <span className="text-sm font-medium">{date.getDate()}</span>
+                  <span className="text-base font-medium">{date.getDate()}</span>
                   {trades.length > 0 && (
                     <span className="text-xs font-bold">
                       {pnl >= 0 ? '+' : ''}{pnl.toFixed(1)}R
