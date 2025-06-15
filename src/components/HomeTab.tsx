@@ -1,4 +1,3 @@
-
 import { ProfileSwitcher } from './ProfileSwitcher';
 import { StreakDisplay } from './StreakDisplay';
 import { QuoteDisplay } from './QuoteDisplay';
@@ -18,6 +17,7 @@ export const HomeTab = ({ gameState, updateGameState, playSound }: HomeTabProps)
       <ProfileSwitcher 
         activeProfile={gameState.activeProfile}
         onProfileChange={(profile) => updateGameState(state => ({ ...state, activeProfile: profile }))}
+        playSound={playSound}
       />
       
       <StreakDisplay 

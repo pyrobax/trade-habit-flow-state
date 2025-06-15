@@ -12,9 +12,10 @@ import { useTheme } from '@/hooks/useTheme';
 interface SettingsTabProps {
   gameState: GameState;
   updateGameState: (updater: (prevState: GameState) => GameState) => void;
+  playSound?: (soundType: 'check' | 'win' | 'click' | 'achievement' | 'perfect-day') => void;
 }
 
-export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) => {
+export const SettingsTab = ({ gameState, updateGameState, playSound }: SettingsTabProps) => {
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<'usa-indices' | 'aud-nzd-pairs'>('usa-indices');
   const [newRule, setNewRule] = useState('');
@@ -23,6 +24,7 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   const { theme, toggleTheme } = useTheme();
 
   const toggleSection = (section: string) => {
+    playSound?.('click');
     setExpandedSections(prev => 
       prev.includes(section) 
         ? prev.filter(s => s !== section)
@@ -30,7 +32,13 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
     );
   };
 
+  const handleProfileChange = (profile: 'usa-indices' | 'aud-nzd-pairs') => {
+    playSound?.('click');
+    setSelectedProfile(profile);
+  };
+
   const exportData = () => {
+    playSound?.('click');
     const dataStr = JSON.stringify(gameState, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     const exportFileDefaultName = `trade-habit-hero-backup-${new Date().toISOString().split('T')[0]}.json`;
@@ -42,6 +50,7 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   };
 
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    playSound?.('click');
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -60,6 +69,7 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   };
 
   const resetAllData = () => {
+    playSound?.('click');
     if (window.confirm('Are you sure you want to reset ALL data? This action cannot be undone.')) {
       if (window.confirm('This will permanently delete all your trades, achievements, and settings. Continue?')) {
         updateGameState(() => getDefaultGameState());
@@ -69,6 +79,7 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   };
 
   const addRule = () => {
+    playSound?.('click');
     if (!newRule.trim()) return;
     
     updateGameState(state => ({
@@ -92,11 +103,13 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   };
 
   const startEditRule = (ruleId: string, currentText: string) => {
+    playSound?.('click');
     setEditingRule(ruleId);
     setEditRuleText(currentText);
   };
 
   const saveRuleEdit = (ruleId: string) => {
+    playSound?.('click');
     if (!editRuleText.trim()) return;
     
     updateGameState(state => ({
@@ -117,11 +130,13 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
   };
 
   const cancelRuleEdit = () => {
+    playSound?.('click');
     setEditingRule(null);
     setEditRuleText('');
   };
 
   const deleteRule = (ruleId: string) => {
+    playSound?.('click');
     updateGameState(state => ({
       ...state,
       profiles: {
@@ -220,14 +235,14 @@ export const SettingsTab = ({ gameState, updateGameState }: SettingsTabProps) =>
             <div className="flex gap-2">
               <Button
                 variant={selectedProfile === 'usa-indices' ? 'default' : 'outline'}
-                onClick={() => setSelectedProfile('usa-indices')}
+                onClick={() => handleProfileChange('usa-indices')}
                 className="flex-1"
               >
                 USA Indices
               </Button>
               <Button
                 variant={selectedProfile === 'aud-nzd-pairs' ? 'default' : 'outline'}
-                onClick={() => setSelectedProfile('aud-nzd-pairs')}
+                onClick={() => handleProfileChange('aud-nzd-pairs')}
                 className="flex-1"
               >
                 AUD/NZD Pairs

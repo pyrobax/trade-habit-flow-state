@@ -38,6 +38,7 @@ const Index = () => {
               <SettingsTab 
                 gameState={gameState} 
                 updateGameState={updateGameState}
+                playSound={playSound}
               />
             </TabsContent>
           </div>
