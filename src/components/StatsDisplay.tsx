@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -29,9 +30,7 @@ export const StatsDisplay = ({ gameState, playSound }: StatsDisplayProps) => {
   const largestLoss = currentTrades.length > 0 ? Math.min(...currentTrades.map(t => t.pnlR)) : 0;
 
   const handleToggle = () => {
-    if (playSound) {
-      playSound('click');
-    }
+    playSound?.('click');
     setIsExpanded(!isExpanded);
   };
 
