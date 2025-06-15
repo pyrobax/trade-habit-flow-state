@@ -76,22 +76,22 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
         </p>
       </div>
 
-      <div className="bg-card rounded-lg p-6 flex-1 min-h-[600px] max-w-none">
+      <div className="bg-card rounded-lg p-4 flex-1 min-h-[600px] mx-auto max-w-4xl">
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={handleDateClick}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
-          className="w-full h-full max-w-none"
+          className="w-full h-full"
           classNames={{
             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 h-full w-full",
             month: "space-y-4 flex-1 w-full",
             table: "w-full border-collapse space-y-1 h-full",
             head_row: "flex w-full",
-            head_cell: "text-muted-foreground rounded-md font-normal text-sm flex-1 min-w-[60px]",
+            head_cell: "text-muted-foreground rounded-md font-normal text-sm flex-1 min-w-[50px]",
             row: "flex w-full mt-2",
-            cell: "h-16 text-center text-sm p-0 relative flex-1 min-w-[60px] [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+            cell: "h-16 text-center text-sm p-0 relative flex-1 min-w-[50px] [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
             day: "h-16 w-full p-0 font-normal aria-selected:opacity-100 rounded-md",
           }}
           components={{
