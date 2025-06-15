@@ -1,3 +1,4 @@
+
 import { Progress } from '@/components/ui/progress';
 import { getStreakTitle } from '@/utils/streakCalculator';
 
@@ -19,7 +20,9 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
   return (
     <div className="text-center space-y-4 p-4 border rounded-lg">
       <div className="flex items-center justify-center gap-2">
-        <span className="text-lg font-semibold text-foreground">Streak: {streak} Days</span>
+        <span className="text-lg font-semibold text-foreground">
+          Streak: {streak} {streak === 1 ? 'Day' : 'Days'}
+        </span>
         {streak > 0 && (
           <span className="text-2xl animate-pulse">🔥</span>
         )}
@@ -34,7 +37,7 @@ export const StreakDisplay = ({ streak, streakMilestones }: StreakDisplayProps) 
         </div>
         <div className="text-sm text-muted-foreground">
           {streak < nextMilestone ? (
-            `${nextMilestone - streak} days to next milestone`
+            `${nextMilestone - streak} ${nextMilestone - streak === 1 ? 'day' : 'days'} to next milestone`
           ) : (
             'Maximum milestone reached!'
           )}
