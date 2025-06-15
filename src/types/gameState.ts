@@ -1,3 +1,4 @@
+
 export interface Trade {
   id: string;
   date: string; // YYYY-MM-DD format
@@ -44,15 +45,9 @@ export interface Achievement {
 }
 
 export interface GameState {
-  activeProfile: 'usa-indices' | 'aud-nzd-pairs';
-  profiles: {
-    'usa-indices': ProfileConfig;
-    'aud-nzd-pairs': ProfileConfig;
-  };
-  trades: {
-    'usa-indices': Trade[];
-    'aud-nzd-pairs': Trade[];
-  };
+  activeProfile: string;
+  profiles: Record<string, ProfileConfig>;
+  trades: Record<string, Trade[]>;
   currentStreak: number;
   streakMilestones: number[];
   achievements: Achievement[];

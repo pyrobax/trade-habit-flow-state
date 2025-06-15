@@ -3,34 +3,32 @@ import { Button } from '@/components/ui/button';
 import { GameState } from '@/types/gameState';
 
 interface ProfileSwitcherProps {
-  activeProfile: 'usa-indices' | 'aud-nzd-pairs';
-  onProfileChange: (profile: 'usa-indices' | 'aud-nzd-pairs') => void;
+  activeProfile: string;
+  onProfileChange: (profile: string) => void;
   gameState: GameState;
   playSound?: (soundType: 'check' | 'win' | 'click' | 'achievement' | 'perfect-day') => void;
 }
 
 export const ProfileSwitcher = ({ activeProfile, onProfileChange, gameState, playSound }: ProfileSwitcherProps) => {
-  const handleProfileChange = (profile: 'usa-indices' | 'aud-nzd-pairs') => {
+  const handleProfileChange = (profile: string) => {
     playSound?.('click');
     onProfileChange(profile);
   };
 
+  const profileKeys = Object.keys(gameState.profiles);
+
   return (
-    <div className="flex gap-2">
-      <Button
-        variant={activeProfile === 'usa-indices' ? 'default' : 'outline'}
-        onClick={() => handleProfileChange('usa-indices')}
-        className="flex-1"
-      >
-        {gameState.profiles['usa-indices'].name}
-      </Button>
-      <Button
-        variant={activeProfile === 'aud-nzd-pairs' ? 'default' : 'outline'}
-        onClick={() => handleProfileChange('aud-nzd-pairs')}
-        className="flex-1"
-      >
-        {gameState.profiles['aud-nzd-pairs'].name}
-      </Button>
+    <div className="flex flex-wrap gap-2">
+      {profileKeys.map(profileKey => (
+        <Button
+          key={profileKey}
+          variant={activeProfile === profileKey ? 'default' : 'outline'}
+          onClick={() => handleProfileChange(profileKey)}
+          className="flex-1 min-w-0"
+        >
+          {gameState.profiles[profileKey].name}
+        </Button>
+      ))}
     </div>
   );
 };
