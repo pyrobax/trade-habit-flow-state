@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -197,7 +195,7 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                         Risk:Reward: {trade.riskRewardRatio}:1
                       </p>
                       <p className="text-sm">
-                        Rules: {trade.allRulesFollowed ? '✅ Perfect' : '❌ Imperfect'}
+                        Rules: {trade.allRulesFollowed ? '✅ Followed' : '❌ Broken'}
                       </p>
                       {trade.notes && (
                         <p className="text-sm text-muted-foreground">{trade.notes}</p>

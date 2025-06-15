@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { GameState } from '@/types/gameState';
@@ -123,11 +124,11 @@ export const CalendarTab = ({ gameState, updateGameState }: CalendarTabProps) =>
         <div className="flex justify-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Perfect Day</span>
+            <span>Rules Followed</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500 rounded"></div>
-            <span>Imperfect Day</span>
+            <span>Rules Broken</span>
           </div>
         </div>
         <p className="text-muted-foreground text-sm">
