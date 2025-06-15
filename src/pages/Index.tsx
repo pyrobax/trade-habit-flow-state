@@ -46,12 +46,15 @@ const Index = () => {
           {/* Fixed Bottom Tab Bar */}
           <TabsList className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t grid grid-cols-3">
             <TabsTrigger value="home" className="flex flex-col gap-1" onClick={handleTabClick}>
+              <span className="text-lg">📊</span>
               <span className="text-xs">Home</span>
             </TabsTrigger>
             <TabsTrigger value="calendar" className="flex flex-col gap-1" onClick={handleTabClick}>
+              <span className="text-lg">📅</span>
               <span className="text-xs">Calendar</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex flex-col gap-1" onClick={handleTabClick}>
+              <span className="text-lg">⚙️</span>
               <span className="text-xs">Settings</span>
             </TabsTrigger>
           </TabsList>
