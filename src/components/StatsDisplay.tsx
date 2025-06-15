@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -57,7 +56,7 @@ export const StatsDisplay = ({ gameState, playSound }: StatsDisplayProps) => {
             </div>
             <div className="text-center p-3 bg-muted/50 rounded">
               <p className="font-medium text-muted-foreground">Current Streak</p>
-              <p className="text-2xl font-bold text-orange-600">{gameState.currentStreak}</p>
+              <p className="text-2xl font-bold text-green-500">{gameState.currentStreak}</p>
             </div>
           </div>
 
