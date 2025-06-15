@@ -32,8 +32,6 @@ export const useGameState = () => {
     type: 'achievement'
   });
 
-  const [lastProfileSwitchTime, setLastProfileSwitchTime] = useState(0);
-
   // Save to localStorage whenever gameState changes
   useEffect(() => {
     localStorage.setItem('tradeHabitHero', JSON.stringify(gameState));
@@ -42,15 +40,11 @@ export const useGameState = () => {
   const updateGameState = (updater: (prevState: GameState) => GameState) => {
     setGameState(prevState => {
       const newState = updater(prevState);
-      const oldStreak = prevState.currentStreak;
       const oldActiveProfile = prevState.activeProfile;
       const oldAchievements = prevState.achievements;
       
       // Check if this is a profile switch
       const isProfileSwitch = newState.activeProfile !== oldActiveProfile;
-      if (isProfileSwitch) {
-        setLastProfileSwitchTime(Date.now());
-      }
       
       // Recalculate streak after any change
       const updatedStreak = calculateStreak(newState);
@@ -61,11 +55,8 @@ export const useGameState = () => {
         currentStreak: updatedStreak
       });
 
-      // Only show celebrations if not a recent profile switch (within 1 second)
-      const timeSinceProfileSwitch = lastProfileSwitchTime > 0 ? Date.now() - lastProfileSwitchTime : Infinity;
-      const shouldShowCelebrations = !isProfileSwitch && timeSinceProfileSwitch > 1000;
-
-      if (shouldShowCelebrations) {
+      // Only show celebrations if NOT a profile switch
+      if (!isProfileSwitch) {
         // Check for new achievement unlocks (any type)
         const newAchievements = updatedAchievements.filter(a => 
           a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
