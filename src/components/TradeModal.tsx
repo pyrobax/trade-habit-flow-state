@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -184,7 +185,7 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                 <div key={trade.id} className="border rounded p-3 space-y-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{index + 1}. {trade.symbol} - {trade.position.toUpperCase()}</p>
+                      <p className="font-medium">{index + 1}. {trade.symbol} - {trade.position === 'long' ? 'BUY' : 'SELL'}</p>
                       <p className={`text-sm font-bold ${trade.pnlR >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         P&L: {trade.pnlR >= 0 ? '+' : ''}{trade.pnlR.toFixed(2)}R
                       </p>
@@ -253,7 +254,7 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <SymbolDropdown
                   value={formData.symbol}
                   onChange={(value) => setFormData({...formData, symbol: value})}
@@ -270,8 +271,8 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="long">Long</SelectItem>
-                      <SelectItem value="short">Short</SelectItem>
+                      <SelectItem value="long">Buy</SelectItem>
+                      <SelectItem value="short">Sell</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

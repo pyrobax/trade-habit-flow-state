@@ -123,7 +123,7 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
 
           {/* Trade Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <SymbolDropdown
                 value={formData.symbol}
                 onChange={(value) => setFormData({...formData, symbol: value})}
@@ -140,8 +140,8 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="long">Long</SelectItem>
-                    <SelectItem value="short">Short</SelectItem>
+                    <SelectItem value="long">Buy</SelectItem>
+                    <SelectItem value="short">Sell</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
