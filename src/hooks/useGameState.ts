@@ -41,9 +41,12 @@ export const useGameState = () => {
     setGameState(prevState => {
       console.log('🔄 UpdateGameState called');
       
-      // Store ORIGINAL achievements before any processing
-      const originalAchievements = [...prevState.achievements];
-      console.log('📊 Original achievements:', originalAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
+      // Create a deep copy of ORIGINAL achievements before ANY processing
+      const originalAchievements = prevState.achievements.map(a => ({
+        ...a,
+        isUnlocked: a.isUnlocked
+      }));
+      console.log('📊 Original achievements (deep copy):', originalAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
       
       const newState = updater(prevState);
       const oldActiveProfile = prevState.activeProfile;
@@ -64,7 +67,7 @@ export const useGameState = () => {
 
       console.log('🎯 New achievements:', updatedAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
 
-      // Check for new achievement unlocks - compare against ORIGINAL state
+      // Check for new achievement unlocks - compare against ORIGINAL deep copy
       const newAchievements = updatedAchievements.filter(newAchievement => {
         const originalAchievement = originalAchievements.find(orig => orig.id === newAchievement.id);
         const wasUnlocked = originalAchievement ? originalAchievement.isUnlocked : false;
