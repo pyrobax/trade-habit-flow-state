@@ -39,15 +39,20 @@ export const useGameState = () => {
 
   const updateGameState = (updater: (prevState: GameState) => GameState) => {
     setGameState(prevState => {
+      console.log('🔄 UpdateGameState called');
       const newState = updater(prevState);
       const oldActiveProfile = prevState.activeProfile;
       const oldAchievements = prevState.achievements;
       
+      console.log('📊 Old achievements:', oldAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
+      
       // Check if this is a profile switch
       const isProfileSwitch = newState.activeProfile !== oldActiveProfile;
+      console.log('🔄 Is profile switch:', isProfileSwitch);
       
       // Recalculate streak after any change
       const updatedStreak = calculateStreak(newState);
+      console.log('🏆 Updated streak:', updatedStreak);
       
       // Check for achievement unlocks
       const updatedAchievements = checkAchievements({
@@ -55,22 +60,25 @@ export const useGameState = () => {
         currentStreak: updatedStreak
       });
 
+      console.log('🎯 New achievements:', updatedAchievements.map(a => ({ id: a.id, unlocked: a.isUnlocked })));
+
+      // Check for new achievement unlocks (any type)
+      const newAchievements = updatedAchievements.filter(a => 
+        a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
+      );
+      
+      console.log('🎉 New unlocked achievements:', newAchievements);
+
       // Only show celebrations if NOT a profile switch
-      if (!isProfileSwitch) {
-        // Check for new achievement unlocks (any type)
-        const newAchievements = updatedAchievements.filter(a => 
-          a.isUnlocked && !oldAchievements.find(pa => pa.id === a.id && pa.isUnlocked)
-        );
-        
-        if (newAchievements.length > 0) {
-          const achievement = newAchievements[0];
-          setCelebration({
-            isOpen: true,
-            title: achievement.name,
-            description: achievement.description,
-            type: achievement.type === 'streak' ? 'streak' : 'achievement'
-          });
-        }
+      if (!isProfileSwitch && newAchievements.length > 0) {
+        const achievement = newAchievements[0];
+        console.log('🎊 Setting celebration for:', achievement.name);
+        setCelebration({
+          isOpen: true,
+          title: achievement.name,
+          description: achievement.description,
+          type: achievement.type === 'streak' ? 'streak' : 'achievement'
+        });
       }
       
       return {
@@ -83,8 +91,11 @@ export const useGameState = () => {
   };
 
   const closeCelebration = () => {
+    console.log('🚪 Closing celebration');
     setCelebration(prev => ({ ...prev, isOpen: false }));
   };
+
+  console.log('🎭 Current celebration state:', celebration);
 
   return { gameState, updateGameState, celebration, closeCelebration };
 };
