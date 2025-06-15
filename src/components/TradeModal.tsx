@@ -22,7 +22,6 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
     symbol: '',
     position: 'long' as 'long' | 'short',
     pnlR: '',
-    riskRewardRatio: '',
     notes: '',
     reviewLink: ''
   });
@@ -38,7 +37,6 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       symbol: '',
       position: 'long',
       pnlR: '',
-      riskRewardRatio: '',
       notes: '',
       reviewLink: ''
     });
@@ -51,7 +49,6 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       symbol: trade.symbol,
       position: trade.position,
       pnlR: trade.pnlR.toString(),
-      riskRewardRatio: trade.riskRewardRatio.toString(),
       notes: trade.notes || '',
       reviewLink: trade.reviewLink || ''
     });
@@ -63,7 +60,6 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
     e.preventDefault();
     
     const pnlR = parseFloat(formData.pnlR);
-    const riskRewardRatio = parseFloat(formData.riskRewardRatio);
 
     const tradeData = {
       id: editingTrade?.id || uuidv4(),
@@ -74,7 +70,7 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
       position: formData.position,
       riskAmount: 1, // Not used but required by type
       pnlR,
-      riskRewardRatio,
+      riskRewardRatio: Math.abs(pnlR), // Use absolute P&L as RR for backwards compatibility
       rulesFollowed: selectedRules,
       allRulesFollowed: selectedRules.length === profileRules.length,
       notes: formData.notes,
@@ -192,9 +188,6 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                         P&L: {trade.pnlR >= 0 ? '+' : ''}{trade.pnlR.toFixed(2)}R
                       </p>
                       <p className="text-sm">
-                        Risk:Reward: {trade.riskRewardRatio}:1
-                      </p>
-                      <p className="text-sm">
                         Rules: {trade.allRulesFollowed ? '✅ Followed' : '❌ Broken'}
                       </p>
                       {trade.notes && (
@@ -286,29 +279,16 @@ export const TradeModal = ({ isOpen, onClose, selectedDate, gameState, updateGam
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="pnlR">P&L (R)</Label>
-                  <Input
-                    id="pnlR"
-                    type="number"
-                    step="0.1"
-                    value={formData.pnlR}
-                    onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="riskRewardRatio">Risk:Reward Ratio</Label>
-                  <Input
-                    id="riskRewardRatio"
-                    type="number"
-                    step="0.1"
-                    value={formData.riskRewardRatio}
-                    onChange={(e) => setFormData({...formData, riskRewardRatio: e.target.value})}
-                    required
-                  />
-                </div>
+              <div>
+                <Label htmlFor="pnlR">P&L (R)</Label>
+                <Input
+                  id="pnlR"
+                  type="number"
+                  step="0.1"
+                  value={formData.pnlR}
+                  onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
+                  required
+                />
               </div>
 
               <div>

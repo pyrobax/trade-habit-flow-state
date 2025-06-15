@@ -1,5 +1,4 @@
 
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,6 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
     symbol: '',
     position: 'long' as 'long' | 'short',
     pnlR: '',
-    riskRewardRatio: '',
     notes: '',
     reviewLink: ''
   });
@@ -40,7 +38,6 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
       symbol: '',
       position: 'long',
       pnlR: '',
-      riskRewardRatio: '',
       notes: '',
       reviewLink: ''
     });
@@ -60,7 +57,6 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
     e.preventDefault();
     
     const pnlR = parseFloat(formData.pnlR);
-    const riskRewardRatio = parseFloat(formData.riskRewardRatio);
     const today = new Date().toISOString().split('T')[0];
 
     const newTrade: Trade = {
@@ -72,7 +68,7 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
       position: formData.position,
       riskAmount: 1, // Not used but required by type
       pnlR,
-      riskRewardRatio,
+      riskRewardRatio: Math.abs(pnlR), // Use absolute P&L as RR for backwards compatibility
       rulesFollowed: selectedRules,
       allRulesFollowed: selectedRules.length === profileRules.length,
       notes: formData.notes,
@@ -153,29 +149,16 @@ export const TradeForm = ({ gameState, updateGameState, playSound }: TradeFormPr
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="pnlR">P&L (R)</Label>
-                <Input
-                  id="pnlR"
-                  type="number"
-                  step="0.1"
-                  value={formData.pnlR}
-                  onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="riskRewardRatio">Risk:Reward Ratio</Label>
-                <Input
-                  id="riskRewardRatio"
-                  type="number"
-                  step="0.1"
-                  value={formData.riskRewardRatio}
-                  onChange={(e) => setFormData({...formData, riskRewardRatio: e.target.value})}
-                  required
-                />
-              </div>
+            <div>
+              <Label htmlFor="pnlR">P&L (R)</Label>
+              <Input
+                id="pnlR"
+                type="number"
+                step="0.1"
+                value={formData.pnlR}
+                onChange={(e) => setFormData({...formData, pnlR: e.target.value})}
+                required
+              />
             </div>
 
             <div>

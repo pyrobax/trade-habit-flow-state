@@ -36,10 +36,10 @@ const defaultAchievements: Achievement[] = [
   { id: 'day21', name: 'Trading in the Zone', description: 'You are the honored one.', type: 'streak', criteria: { streak: 21 }, isUnlocked: false },
   
   // Discipline Achievements (Permanent)
-  { id: 'strategist', name: 'The Strategist', description: 'Achieve 5 trades where R:R is equal or greater than 4', type: 'discipline', criteria: { highRrTrades: 5, minRr: 4 }, isUnlocked: false },
+  { id: 'strategist', name: 'The Strategist', description: 'Achieve 5 trades where P&L is equal or greater than 4R', type: 'discipline', criteria: { highPnlTrades: 5, minPnl: 4 }, isUnlocked: false },
   { id: 'highRoller', name: 'The High Roller', description: 'Achieve a single-day P/L of >= 10R', type: 'discipline', criteria: { singleDayPnl: 10 }, isUnlocked: false },
-  { id: 'riskManager', name: 'The Risk Manager', description: 'Log 12 trades with an R:R of 2.0 or greater', type: 'discipline', criteria: { highRrTrades: 12 }, isUnlocked: false },
-  { id: 'comebackKing', name: 'The Comeback King', description: 'Follow a negative P/L week with a positive P/L week', type: 'discipline', criteria: { comeback: true }, isUnlocked: false },
+  { id: 'riskManager', name: 'The Risk Manager', description: 'Log 12 trades with a P&L of 2.0R or greater', type: 'discipline', criteria: { highPnlTrades: 12 }, isUnlocked: false },
+  { id: 'comebackKing', name: 'The Comeback King', description: 'Achieve a 20-day streak', type: 'discipline', criteria: { streakRequired: 20 }, isUnlocked: false },
   { id: 'specialist', name: 'The Specialist', description: 'Log 10 consecutive perfect trades for the same symbol', type: 'discipline', criteria: { consecutivePerfectSymbol: 10 }, isUnlocked: false },
   
   // Meta Achievement (Permanent)

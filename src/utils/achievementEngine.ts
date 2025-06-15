@@ -24,7 +24,7 @@ export const checkAchievements = (gameState: GameState): Achievement[] => {
   checkStrategistAchievement(achievements, allTrades);
   checkHighRollerAchievement(achievements, allTrades);
   checkRiskManagerAchievement(achievements, allTrades);
-  checkComebackKingAchievement(achievements, allTrades);
+  checkComebackKingAchievement(achievements, gameState.currentStreak);
   checkSpecialistAchievement(achievements, allTrades);
   
   // Check meta achievement
@@ -41,9 +41,9 @@ const checkStrategistAchievement = (achievements: Achievement[], trades: Trade[]
   const achievement = achievements.find(a => a.id === 'strategist');
   if (!achievement || achievement.isUnlocked) return;
   
-  // Check for 5 trades with R:R >= 4.0
-  const highRrTrades = trades.filter(t => t.riskRewardRatio >= 4.0);
-  achievement.isUnlocked = highRrTrades.length >= 5;
+  // Check for 5 trades with P&L >= 4.0R
+  const highPnlTrades = trades.filter(t => t.pnlR >= 4.0);
+  achievement.isUnlocked = highPnlTrades.length >= 5;
 };
 
 const checkHighRollerAchievement = (achievements: Achievement[], trades: Trade[]) => {
@@ -63,24 +63,17 @@ const checkRiskManagerAchievement = (achievements: Achievement[], trades: Trade[
   const achievement = achievements.find(a => a.id === 'riskManager');
   if (!achievement || achievement.isUnlocked) return;
   
-  const highRrTrades = trades.filter(t => t.riskRewardRatio >= 2.0);
-  achievement.isUnlocked = highRrTrades.length >= 12;
+  // Check for 12 trades with P&L >= 2.0R
+  const highPnlTrades = trades.filter(t => t.pnlR >= 2.0);
+  achievement.isUnlocked = highPnlTrades.length >= 12;
 };
 
-const checkComebackKingAchievement = (achievements: Achievement[], trades: Trade[]) => {
+const checkComebackKingAchievement = (achievements: Achievement[], currentStreak: number) => {
   const achievement = achievements.find(a => a.id === 'comebackKing');
   if (!achievement || achievement.isUnlocked) return;
   
-  // Group by week and check for negative week followed by positive week
-  const weeklyPnl = getWeeklyPnl(trades);
-  const weeks = Object.keys(weeklyPnl).sort();
-  
-  for (let i = 0; i < weeks.length - 1; i++) {
-    if (weeklyPnl[weeks[i]] < 0 && weeklyPnl[weeks[i + 1]] > 0) {
-      achievement.isUnlocked = true;
-      break;
-    }
-  }
+  // Unlock after reaching 20-day streak
+  achievement.isUnlocked = currentStreak >= 20;
 };
 
 const checkSpecialistAchievement = (achievements: Achievement[], trades: Trade[]) => {
